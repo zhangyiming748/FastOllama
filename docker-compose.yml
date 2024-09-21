@@ -1,0 +1,29 @@
+name: ollama
+services:
+    ollama:
+        deploy:
+            resources:
+                reservations:
+                    devices:
+                        - driver: nvidia
+                          count: all
+                          capabilities:
+                              - gpu
+        volumes:
+            - /c/Users/zen/ollama:/root/.ollama
+        ports:
+            - 11434:11434
+        container_name: ollama
+        image: ollama/ollama
+
+    open-webui:  # 确保这里的缩进与上面的服务一致
+        restart: unless-stopped
+        container_name: ollama-webui
+        ports:
+            - 11433:8080
+        volumes:
+            - /c/Users/zen/ollama/data:/app/backend/data
+        environment:
+            - OLLAMA_API_BASE_URL=http://ollama:11434/api
+            - WEBUI_SECRET_KEY=TkjGEiQ@5K^j
+        image: ghcr.io/open-webui/open-webui:main
